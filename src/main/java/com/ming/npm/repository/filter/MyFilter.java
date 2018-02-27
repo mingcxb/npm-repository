@@ -2,10 +2,12 @@ package com.ming.npm.repository.filter;
 
 import com.ming.npm.repository.handler.RPMRequestHandler;
 import com.ming.npm.repository.handler.RequestHandlerFactory;
+import com.ming.npm.repository.util.NpmUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -26,12 +28,14 @@ public class MyFilter implements Filter {
         set.add("index");
         set.add("/favicon.ico");
 
-
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        URL resource = contextClassLoader.getResource("");
-        HOME_DIR = resource.getFile();
-        REPOSITORY_DIR = HOME_DIR + "repository";
-        System.out.println("REPOSITORY_DIR:" +  REPOSITORY_DIR);
+        try {
+            // 获取程序当前的运行目录，作为仓库路径
+            HOME_DIR = NpmUtils.getAppPath(this.getClass());
+            REPOSITORY_DIR = HOME_DIR + File.separator + "repository";
+            System.out.println("REPOSITORY_DIR==========>" + REPOSITORY_DIR);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
