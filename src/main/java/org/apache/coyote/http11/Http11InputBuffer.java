@@ -146,6 +146,9 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
      */
     private int socketReadBufferSize;
 
+    public static final String AT = "@";
+    public static final String AT_CHAR = "%2f";
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -488,7 +491,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 byte [] aa = byteBuffer.array();
                 byte [] bb = Arrays.copyOfRange(aa, parsingRequestLineStart, end);
                 String ss = new String(bb);
-                String url = ss.replaceAll("%2f", "@");
+                String url = ss.replaceAll(AT_CHAR, AT);
                 byte[] bytes = url.getBytes();
 
                 messageBytes.setBytes(bytes, 0, bytes.length);

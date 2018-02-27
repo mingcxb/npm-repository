@@ -51,6 +51,7 @@ public class JsonRequestHandler extends RPMRequestHandler {
     @Override
     protected void responseFromRemoteResource(String path, HttpServletResponse response) throws IOException {
         String npmUrl = MyFilter.BASE_NPM_REGISTRY + path;
+        System.out.println("remote:=======>" + npmUrl);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet get = new HttpGet(npmUrl);
