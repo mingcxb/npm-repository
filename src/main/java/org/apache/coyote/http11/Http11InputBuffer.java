@@ -483,17 +483,15 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 request.requestURI().setBytes(byteBuffer.array(), parsingRequestLineStart,
                         parsingRequestLineQPos - parsingRequestLineStart);
             } else {
+                //by cxb; 解决@符号被转义的问题
                 MessageBytes messageBytes = request.requestURI();
                 byte [] aa = byteBuffer.array();
                 byte [] bb = Arrays.copyOfRange(aa, parsingRequestLineStart, end);
                 String ss = new String(bb);
-                System.out.println(ss);
                 String url = ss.replaceAll("%2f", "@");
-                System.out.println(url);
                 byte[] bytes = url.getBytes();
 
-                messageBytes.setBytes(bytes, 0,
-                        bytes.length);
+                messageBytes.setBytes(bytes, 0, bytes.length);
             }
             parsingRequestLinePhase = 5;
         }

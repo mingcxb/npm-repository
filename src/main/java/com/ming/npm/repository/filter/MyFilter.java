@@ -22,8 +22,9 @@ public class MyFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        set.add("");
+        set.add("/");
         set.add("index");
+        set.add("/favicon.ico");
 
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
