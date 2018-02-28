@@ -20,7 +20,7 @@ npm repository proxy
   
 启动：
 
-  java -jar npm-repository-0.0.1-SNAPSHOT.jar
+  java -jar npm-repository-0.0.1-SNAPSHOT.jar --server.hostname=localhost
 
 使用：
 
