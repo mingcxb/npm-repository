@@ -27,6 +27,7 @@ public class TgzRequestHandler extends RPMRequestHandler {
     @Override
     protected void responseFromRemoteResource(String path, HttpServletResponse response) throws IOException {
         String npmRepositoryServer = MyFilter.BASE_NPM_REGISTRY + path;
+        System.out.println("remote:=======>" + npmRepositoryServer);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet get = new HttpGet(npmRepositoryServer);
