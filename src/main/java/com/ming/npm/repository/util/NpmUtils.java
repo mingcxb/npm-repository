@@ -1,5 +1,6 @@
 package com.ming.npm.repository.util;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 public class NpmUtils {
@@ -11,9 +12,8 @@ public class NpmUtils {
         java.io.File file = new java.io.File(filePath);
         filePath = file.getAbsolutePath();
 
-        if (filePath.indexOf("\\file:") != -1) {
-            filePath = filePath.substring(0, filePath.indexOf("\\file:"));
-        }
+        if (filePath.indexOf(File.separator + "file:") != -1)
+            filePath = filePath.substring(0, filePath.indexOf(File.separator + "file:"));
 
         return filePath;
     }
