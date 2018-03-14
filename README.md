@@ -29,9 +29,14 @@ npm repository proxy
   2.配置npm仓库地址：npm config set registry http://localhost:3000/
 
 
+
 **内网使用：**
+
   1、将npm-repository-0.0.1-SNAPSHOT.jar和同级目录生成的repository仓库文件一同拷贝到内网环境中，部署运行
+  
   2、以后需要增加js依赖，在外网先下载一次，再将repository仓库拷贝到内网
+ 
+ 
  
  
  **安装node-sass错误解决：**
