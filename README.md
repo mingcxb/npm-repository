@@ -38,9 +38,14 @@ npm repository proxy
  
   以window 7、node v9.2.0、npm 5.6.0环境为列，安装node-sass需要从github下载文件，
 下载地址为：https://github.com/sass/node-sass/releases/download/v4.7.2/win32-x64-59_binding.node
+  
   手动下载该文件，并将该文件放到repository/my-mirrors/node-sass/v4.7.2/win32-x64-59_binding.node
+  
   最后设置node-sass binary代理地址：
+  
   npm config set sass_binary_site http://localhost:3000/my-mirrors/node-sass
+  
   这样就可以在内网环境中安装node-sass了。
+  
   需要注意的是不同环境使用的binding.node文件，并不相同，所以需要根据具体情况下载对应的文件
 
