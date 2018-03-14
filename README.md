@@ -24,7 +24,7 @@ npm repository proxy
 
 使用：
 
-  1.访问：http://localhost:3000/，确实是否正常运行；
+  1.访问：http://localhost:3000/，确认是否正常运行；
   
   2.配置npm仓库地址：npm config set registry http://localhost:3000/
 
