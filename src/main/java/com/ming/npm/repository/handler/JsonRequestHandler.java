@@ -67,7 +67,10 @@ public class JsonRequestHandler extends RPMRequestHandler {
             saveJson(path, jsonResult);
         }
 
-        String newJson = jsonResult.replaceAll(MyFilter.BASE_NPM_REGISTRY, getProxyUrl());
+        String newJson = replaceUrl(jsonResult, MyFilter.BASE_NPM_REGISTRY);
+        if (MyFilter.BASE_NPM_REGISTRY.toLowerCase().startsWith("https"))
+            newJson = replaceUrl(jsonResult, "http" + MyFilter.BASE_NPM_REGISTRY.substring(5));
+
         byte[] bytes = newJson.getBytes("utf-8");
 
 //        response.setContentLength(bytes.length);
@@ -102,5 +105,39 @@ public class JsonRequestHandler extends RPMRequestHandler {
             jsonFile.createNewFile();
 
         FileUtils.writeStringToFile(jsonFile, jsonStr, "utf-8");
+    }
+
+    /***
+     * 替换资源路径为代理地址路径
+     * @param json
+     * @param replacement
+     * @return
+     */
+    private String replaceUrl(String json, String replacement) {
+//        String newJson = json.replaceAll(MyFilter.BASE_NPM_REGISTRY, getProxyUrl());
+
+        StringBuffer sb = new StringBuffer();
+        StringBuffer temp = new StringBuffer();
+
+        char[] chars = json.toCharArray();
+        for (char a : chars) {
+            if (replacement.startsWith(String.valueOf(a)) || temp.length() > 0) {
+                temp.append(a);
+            } else {
+                sb.append(a);
+            }
+
+            if (temp.length() > 0) {
+                if (temp.length() != replacement.length() && !replacement.startsWith(String.valueOf(temp))) {
+                    sb.append(temp);
+                    temp.setLength(0);// clear content
+                } else if (temp.toString().equalsIgnoreCase(replacement)) {
+                    sb.append(getProxyUrl());
+                    temp.setLength(0);// clear content
+                }
+            }
+        }
+
+        return sb.toString();
     }
 }
