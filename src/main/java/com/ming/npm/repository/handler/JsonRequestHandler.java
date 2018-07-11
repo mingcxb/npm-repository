@@ -1,12 +1,16 @@
 package com.ming.npm.repository.handler;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ming.npm.repository.filter.MyFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JsonRequestHandler extends RPMRequestHandler {
@@ -44,7 +50,7 @@ public class JsonRequestHandler extends RPMRequestHandler {
 
         String filePath = getFilePath(path);
         String json = FileUtils.readFileToString(new File(filePath));
-        String newJson = json.replaceAll(MyFilter.BASE_NPM_REGISTRY, getProxyUrl());
+        String newJson = replaceUrl(json, MyFilter.BASE_NPM_REGISTRY);
         super.responseFromLocalRepository(newJson.getBytes("utf-8"), response);
     }
 
@@ -69,7 +75,10 @@ public class JsonRequestHandler extends RPMRequestHandler {
 
         String newJson = replaceUrl(jsonResult, MyFilter.BASE_NPM_REGISTRY);
         if (MyFilter.BASE_NPM_REGISTRY.toLowerCase().startsWith("https"))
-            newJson = replaceUrl(jsonResult, "http" + MyFilter.BASE_NPM_REGISTRY.substring(5));
+            newJson = replaceUrl(newJson, "http" + MyFilter.BASE_NPM_REGISTRY.substring(5));
+
+        // 自动下载所有版本的tar文件
+        handleTarFile(newJson);
 
         byte[] bytes = newJson.getBytes("utf-8");
 
@@ -139,5 +148,48 @@ public class JsonRequestHandler extends RPMRequestHandler {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 自动下载所有版本的tar文件
+     * @param json
+     */
+    private void handleTarFile(String json) {
+        try {
+            List<String> allTarball = getAllTarball(json);
+            allTarball.stream().forEach(a -> downLoadFile(a));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<String> getAllTarball(String json) {
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
+        JsonObject versions = jsonObject.getAsJsonObject("versions");
+        List<String> collect = versions.entrySet().stream().map(a ->
+                a.getValue().getAsJsonObject().getAsJsonObject("dist").getAsJsonPrimitive("tarball").getAsString()
+        ).collect(Collectors.toList());
+
+        return collect;
+    }
+
+    private void downLoadFile(String url) {
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setRedirectStrategy(new LaxRedirectStrategy()) // adds HTTP REDIRECT support to GET and POST methods
+                .build();
+        try {
+            HttpGet get = new HttpGet(url); // we're using GET but it could be via POST as well
+            CloseableHttpResponse execute = httpclient.execute(get);
+            StatusLine statusLine = execute.getStatusLine();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
