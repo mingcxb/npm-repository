@@ -157,7 +157,10 @@ public class JsonRequestHandler extends RPMRequestHandler {
     private void handleTarFile(String json) {
         try {
             List<String> allTarball = getAllTarball(json);
-            allTarball.stream().forEach(a -> downLoadFile(a));
+
+            for (int i = allTarball.size() - 1, count = 0; i >= 0 && count < 5; i--, count++)
+                downLoadFile(allTarball.get(i));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
