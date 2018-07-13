@@ -74,8 +74,6 @@ public class JsonRequestHandler extends RPMRequestHandler {
         }
 
         String newJson = replaceUrl(jsonResult, MyFilter.BASE_NPM_REGISTRY);
-        if (MyFilter.BASE_NPM_REGISTRY.toLowerCase().startsWith("https"))
-            newJson = replaceUrl(newJson, "http" + MyFilter.BASE_NPM_REGISTRY.substring(5));
 
         // 自动下载所有版本的tar文件
         handleTarFile(newJson);
@@ -147,7 +145,11 @@ public class JsonRequestHandler extends RPMRequestHandler {
             }
         }
 
-        return sb.toString();
+        if (replacement.toLowerCase().startsWith("https")) {
+            return replaceUrl(sb.toString(), "http" + replacement.substring(5));
+        } else {
+            return sb.toString();
+        }
     }
 
     /**
